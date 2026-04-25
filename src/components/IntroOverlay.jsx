@@ -131,9 +131,9 @@ export default function IntroOverlay() {
           transition={{ duration: 0.6 }}
           className="fixed inset-0 z-[200] flex flex-col justify-start md:justify-center items-center bg-black/80 px-6 overflow-y-auto py-20 custom-scrollbar"
         >
-          <div ref={contentRef} className="max-w-4xl text-center space-y-12">
-            <div className="space-y-4">
-              <h1 className="text-5xl md:text-8xl font-black font-['Syne'] text-white tracking-widest uppercase overflow-hidden">
+          <div ref={contentRef} className="w-full text-center space-y-12">
+            <div className="space-y-4 px-4">
+              <h1 className="text-[10vw] md:text-[8vw] font-black font-['Syne'] text-white tracking-widest uppercase overflow-hidden leading-tight">
                 {renderTitle(data.title)}
               </h1>
               <h3 className="intro-subtitle text-xl md:text-3xl text-blue-500 font-['JetBrains_Mono'] tracking-wider uppercase opacity-0">
@@ -141,7 +141,7 @@ export default function IntroOverlay() {
               </h3>
             </div>
             
-            <p className="intro-text text-gray-400 font-['Syne'] text-lg md:text-2xl leading-relaxed max-w-3xl mx-auto opacity-0">
+            <p className="intro-text text-gray-400 font-['Syne'] text-lg md:text-2xl leading-relaxed max-w-4xl mx-auto opacity-0">
               {data.text}
             </p>
             

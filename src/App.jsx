@@ -452,20 +452,38 @@ export default function App() {
   }
 
   return (
-    <div className="app-root min-h-screen bg-[#0a0a0f] text-white overflow-hidden relative">
+    <div className="app-root min-h-screen bg-[#0a0a0f] text-white overflow-hidden">
       <TabNavigation />
 
-      {/* Main Scene Container */}
-      <main className="fixed inset-0 pt-20">
-        <SceneManager sceneIndex={currentScene} />
-      </main>
-
-      {/* UI Overlays */}
+      {/* Landing & Special Pages */}
       {currentScene === 0 && <LandingOverlay />}
       {currentScene === 12 && <DevPage />}
-      {currentScene !== 0 && currentScene !== 12 && <IntroOverlay />}
-      {currentScene !== 0 && currentScene !== 12 && hasSeenIntro && <ControlPanel onOperation={handleOperation} />}
-      {currentScene !== 0 && currentScene !== 12 && hasSeenIntro && <CodePanel activeOp={lastOp?.type} activeLine={activeLine} />}
+
+      {/* Main Layout for Algorithm Pages */}
+      {currentScene !== 0 && currentScene !== 12 && (
+        <div className="app-layout">
+          {/* Code Panel - Left Sidebar */}
+          {hasSeenIntro && (
+            <aside className="code-panel-sidebar">
+              <CodePanel activeOp={lastOp?.type} activeLine={activeLine} />
+            </aside>
+          )}
+
+          {/* Main Scene - Center */}
+          <main className="scene-container">
+            <SceneManager sceneIndex={currentScene} />
+          </main>
+
+          <IntroOverlay />
+
+          {/* Control Panel - Right Sidebar */}
+          {hasSeenIntro && (
+            <aside className="control-panel-sidebar">
+              <ControlPanel onOperation={handleOperation} />
+            </aside>
+          )}
+        </div>
+      )}
     </div>
   )
 }

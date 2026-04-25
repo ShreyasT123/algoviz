@@ -21,7 +21,7 @@ export default function LandingOverlay() {
         <div className="absolute top-0 right-1/4 w-[1px] h-full bg-gradient-to-b from-transparent via-indigo-500/20 to-transparent" />
       </div>
 
-      <div className="relative z-10 max-w-6xl w-full px-8 flex flex-col items-center text-center">
+      <div className="relative z-10 max-w-7xl w-full px-8 flex flex-col items-center text-center">
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
@@ -35,7 +35,7 @@ export default function LandingOverlay() {
             ALGO<span className="text-transparent bg-clip-text bg-gradient-to-b from-blue-400 via-blue-600 to-indigo-600 drop-shadow-[0_0_30px_rgba(59,130,246,0.3)]">REEF</span>
           </h1>
 
-          <p className="text-xl md:text-2xl text-gray-400 font-medium tracking-tight max-w-3xl mx-auto mb-16 leading-relaxed">
+          <p className="text-xl md:text-2xl text-gray-400 font-medium tracking-tight max-w-4xl mx-auto mb-16 leading-relaxed">
             Where abstract complexity transforms into a living, breathing digital experience.
             Visualize, analyze, and master data structures in <span className="text-white border-b border-blue-500/50">real-time</span>.
           </p>
