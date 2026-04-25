@@ -1,5 +1,6 @@
 import { motion, AnimatePresence } from 'framer-motion'
 import { useAppStore } from '../../store/dsStore'
+import InfoPanel from '../InfoPanel/InfoPanel'
 import './CodePanel.css'
 
 const PSEUDOCODE = {
@@ -155,8 +156,10 @@ export default function CodePanel({ activeOp, activeLine }) {
   const bigo   = BIG_O[activeOp]
 
   return (
-    <AnimatePresence>
-      {activeOp && (
+    <>
+      <InfoPanel />
+      <AnimatePresence>
+        {activeOp && (
         <motion.div
           className="code-panel"
           initial={{ x: 120, opacity: 0 }}
@@ -196,5 +199,6 @@ export default function CodePanel({ activeOp, activeLine }) {
         </motion.div>
       )}
     </AnimatePresence>
+    </>
   )
 }
