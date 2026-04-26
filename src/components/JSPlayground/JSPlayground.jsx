@@ -5,7 +5,7 @@ import { useAppStore } from '../../store/dsStore'
 // Syntax Highlighting
 import Editor from 'react-simple-code-editor'
 import Prism from 'prismjs'
-import 'prismjs/components/prism-javascript'
+// JavaScript is included in the default prismjs bundle, so we don't need to import the component.
 import 'prismjs/themes/prism-tomorrow.css'
 
 const CodeEditor = Editor.default || Editor;
