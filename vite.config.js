@@ -15,6 +15,7 @@ export default defineConfig({
             if (id.includes('d3')) return 'vendor-d3';
             if (id.includes('tone')) return 'vendor-tone';
             if (id.includes('animejs')) return 'vendor-animejs';
+            if (id.includes('prismjs')) return 'vendor-prismjs';
             return 'vendor-core';
           }
         }
