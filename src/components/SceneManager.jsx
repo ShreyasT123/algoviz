@@ -38,7 +38,6 @@ export default function SceneManager({ sceneIndex }) {
       <Suspense fallback={<div className="flex items-center justify-center h-full text-blue-500 font-bold">LOADING SCENE...</div>}>
         {renderScene()}
       </Suspense>
-      {sceneIndex !== 0 && sceneIndex !== 12 && <ZoomControls />}
     </div>
   )
 }

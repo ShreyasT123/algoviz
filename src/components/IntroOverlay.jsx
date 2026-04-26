@@ -4,156 +4,142 @@ import { animate, createScope, stagger } from 'animejs';
 import { useAppStore } from '../store/dsStore';
 
 const INTRO_DATA = {
-  1: {
-    title: "THE STACK",
-    subtitle: "Last In, First Out (LIFO)",
-    text: "Think of a physical pile of heavy plates. You can only safely add a new plate to the very top, and you must remove the top plate before accessing the ones underneath. Stacks govern how programs handle function calls and 'Undo' histories."
-  },
-  2: {
-    title: "THE QUEUE",
-    subtitle: "First In, First Out (FIFO)",
-    text: "Exactly like waiting in line at a movie theater. The first person to join the queue is the first one served and removed. Queues are universal—powering web traffic, task scheduling, and message protocols."
-  },
-  3: {
-    title: "LINKED LIST",
-    subtitle: "Shattered Memory",
-    text: "Unlike an array, a Linked List doesn't store data sequentially in memory. Instead, it scatters data across empty space. Each piece of data (a Node) contains a physical pointer holding the exact GPS coordinates of the next node in the chain."
-  },
-  4: {
-    title: "BINARY TREE",
-    subtitle: "Hierarchical Traversal",
-    text: "Data organized like a root system. Every node can branch into two directions holding smaller data to the left and larger data to the right. This geometry drastically collapses search times from linear to logarithmic speeds."
-  },
-  5: {
-    title: "THE GRAPH",
-    subtitle: "Webs of Reality",
-    text: "The ultimate data structure. Graphs map relational logic—representing city roads, social media friends, and the physical internet itself. Nodes connect to each other via Edges, forming complex networks."
-  },
-  6: {
-    title: "DYNAMIC PROGRAMMING",
-    subtitle: "Remembering the Past",
-    text: "Why calculate what you already know? Dynamic Programming (Tabulation) breaks massive problems into smaller grids. By storing previously computed answers in a massive table, the algorithm simply 'looks up' history instead of repeating work."
-  },
-  7: {
-    title: "BACKTRACKING",
-    subtitle: "The N-Queens Paradigm",
-    text: "The ultimate trial and error. Backtracking explores a path until it hits a rigid dead end, then physically undoes its last move and tries an alternative. We will visualize this using the classic N-Queens chess problem."
-  },
-  8: {
-    title: "DIVIDE & CONQUER",
-    subtitle: "Shatter to Solve",
-    text: "Solving a 10,000-item problem is hard. Solving a 1-item problem is trivial. Divide & Conquer recursively splits a massive array in half until every piece is isolated, then mathematically stitches them back together in perfect order."
-  },
-  9: {
-    title: "GREEDY ALGORITHMS",
-    subtitle: "The Cashier's Dilemma",
-    text: "Greedy logic doesn't look at the big picture. It only asks: 'What is the absolute best move I can make right exactly now?' We visualize this with the Coin Change problem—always grabbing the largest possible denomination to reach a target sum."
-  },
-  10: {
-    title: "SORTING ALGORITHMS",
-    subtitle: "Imposing Order on Chaos",
-    text: "The foundational problem of Computer Science. Watch pure entropy physically organize itself as algorithms like Quick Sort and Bubble Sort manipulate unsorted arrays through physical swapping logic."
-  },
-  11: {
-    title: "RECURSION",
-    subtitle: "The Call Stack",
-    text: "A function that constantly summons copies of itself. To understand Recursion, you must see the physical 'Memory Frames' stacking on top of each other. The tower grows until it hits the Base Case, collapsing back down with the final answer."
-  }
+  1:  { label:'01', title:'STACK',              subtitle:'Last In, First Out',      color:'rgba(37,99,235,0.8)',   text:'Think of a physical pile of plates. You can only add to the very top, and must remove the top plate before accessing anything underneath. Stacks govern how programs handle function calls and undo histories.' },
+  2:  { label:'02', title:'QUEUE',              subtitle:'First In, First Out',     color:'rgba(16,185,129,0.8)',  text:'Exactly like a line at a movie theater. The first person to join is the first one served. Queues power web traffic management, task scheduling, and message protocols.' },
+  3:  { label:'03', title:'LINKED LIST',        subtitle:'Scattered Memory Chains', color:'rgba(245,158,11,0.8)',  text:'Unlike arrays, linked lists scatter data across memory. Each node contains a value and a pointer to the next node — forming a chain across non-contiguous memory addresses.' },
+  4:  { label:'04', title:'BINARY TREE',        subtitle:'Hierarchical Traversal',  color:'rgba(99,102,241,0.8)', text:'Data organized like a root system. Every node branches into at most two directions — smaller values left, larger right. This geometry collapses search time from O(n) to O(log n).' },
+  5:  { label:'05', title:'GRAPH',              subtitle:'Webs of Reality',         color:'rgba(6,182,212,0.8)',   text:'The most versatile data structure. Graphs model roads, social networks, and the internet itself. Nodes connect via edges — forming complex, traversable networks.' },
+  6:  { label:'06', title:'DYNAMIC PROG.',      subtitle:'Remember the Past',       color:'rgba(168,85,247,0.8)', text:'Why calculate what you already know? DP breaks massive problems into subproblems, storing results in a table. The grid traveler algorithm fills an n×m table of paths from (0,0) to (n,m).' },
+  7:  { label:'07', title:'BACKTRACKING',       subtitle:'The N-Queens Paradigm',   color:'rgba(239,68,68,0.8)',  text:'The ultimate trial and error. Backtracking explores a path until it hits a dead end, then physically undoes its last move. Visualized using the classic N-Queens chess problem.' },
+  8:  { label:'08', title:'DIVIDE & CONQUER',   subtitle:'Shatter to Solve',        color:'rgba(20,184,166,0.8)', text:'Solving 10,000 items is hard. Solving 1 item is trivial. D&C recursively splits a problem in half until each piece is solvable, then stitches results back together.' },
+  9:  { label:'09', title:'GREEDY',             subtitle:"The Cashier's Dilemma",   color:'rgba(251,146,60,0.8)', text:"Greedy logic asks only: 'What's the best move right now?' Visualized with coin change — always picking the largest denomination until the target sum is reached." },
+  10: { label:'10', title:'SORTING',            subtitle:'Imposing Order on Chaos', color:'rgba(52,211,153,0.8)', text:'The foundational problem of Computer Science. Watch entropy resolve as Bubble Sort and Quick Sort physically swap array elements into their correct positions.' },
+  11: { label:'11', title:'RECURSION',          subtitle:'The Call Stack',          color:'rgba(129,140,248,0.8)',text:'A function that summons copies of itself. Memory frames stack up until the base case is hit, then collapse back down carrying the final answer. Visualized as factorial recursion.' },
 };
 
 export default function IntroOverlay() {
   const currentScene = useAppStore(s => s.currentScene);
   const hasSeenIntro = useAppStore(s => s.hasSeenIntro);
   const setSeenIntro = useAppStore(s => s.setSeenIntro);
-  const contentRef = useRef(null);
-  const scope = useRef(null);
-
-  useEffect(() => {
-    if (!hasSeenIntro && contentRef.current) {
-        scope.current = createScope({ root: contentRef.current }).add(() => {
-          // Sequential animations using delays
-          animate('.intro-char', {
-            translateY: [40, 0],
-            opacity: [0, 1]
-          }, {
-            delay: stagger(30),
-            ease: 'outExpo',
-            duration: 1000
-          });
-
-          animate('.intro-subtitle', {
-            opacity: [0, 1],
-            translateX: [-20, 0]
-          }, {
-            delay: 400,
-            ease: 'outQuad',
-            duration: 600
-          });
-
-          animate('.intro-text', {
-            opacity: [0, 1]
-          }, {
-            delay: 600,
-            ease: 'outQuad',
-            duration: 800
-          });
-
-          animate('.intro-btn', {
-            scale: [0.9, 1],
-            opacity: [0, 1]
-          }, {
-            delay: 800,
-            duration: 1000
-          });
-        });
-    }
-    return () => scope.current?.revert();
-  }, [currentScene, hasSeenIntro]);
 
   if (currentScene === 0) return null;
-
   const data = INTRO_DATA[currentScene];
   if (!data) return null;
-
-  const renderTitle = (text) => {
-    return text.split('').map((char, i) => (
-      <span key={i} className="intro-char inline-block">{char === ' ' ? '\u00A0' : char}</span>
-    ));
-  };
 
   return (
     <AnimatePresence>
       {!hasSeenIntro && (
         <motion.div
-          initial={{ opacity: 0, backdropFilter: "blur(0px)" }}
-          animate={{ opacity: 1, backdropFilter: "blur(32px)" }}
-          exit={{ opacity: 0, backdropFilter: "blur(0px)", scale: 1.05 }}
-          transition={{ duration: 0.6 }}
-          className="fixed inset-0 z-[200] flex flex-col justify-start md:justify-center items-center bg-black/80 px-6 overflow-y-auto py-20 custom-scrollbar"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0, scale: 1.02 }}
+          transition={{ duration: 0.5 }}
+          style={{
+            position: 'fixed', inset: 0, zIndex: 200,
+            background: 'rgba(10,10,14,0.92)',
+            backdropFilter: 'blur(20px)',
+            WebkitBackdropFilter: 'blur(20px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '24px',
+          }}
         >
-          <div ref={contentRef} className="w-full text-center space-y-12">
-            <div className="space-y-4 px-4">
-              <h1 className="text-[10vw] md:text-[8vw] font-black font-['Syne'] text-white tracking-widest uppercase overflow-hidden leading-tight">
-                {renderTitle(data.title)}
-              </h1>
-              <h3 className="intro-subtitle text-xl md:text-3xl text-blue-500 font-['JetBrains_Mono'] tracking-wider uppercase opacity-0">
-                {data.subtitle}
-              </h3>
-            </div>
-            
-            <p className="intro-text text-gray-400 font-['Syne'] text-lg md:text-2xl leading-relaxed max-w-4xl mx-auto opacity-0">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+            style={{ maxWidth: '640px', width: '100%' }}
+          >
+            {/* Index label */}
+            <p style={{
+              fontFamily: "'JetBrains Mono', monospace",
+              fontSize: '11px', color: 'rgba(255,255,255,0.2)',
+              letterSpacing: '0.25em', marginBottom: '24px',
+            }}>
+              {data.label} / 11
+            </p>
+
+            {/* Accent line */}
+            <div style={{
+              width: '40px', height: '2px',
+              background: data.color,
+              marginBottom: '28px',
+              borderRadius: '2px',
+            }}/>
+
+            {/* Title */}
+            <h1 style={{
+              fontFamily: "'Syne', sans-serif",
+              fontSize: 'clamp(36px, 6vw, 72px)',
+              fontWeight: 900, lineHeight: 0.9,
+              letterSpacing: '-0.02em',
+              color: '#ffffff',
+              marginBottom: '12px',
+            }}>
+              {data.title}
+            </h1>
+
+            {/* Subtitle */}
+            <p style={{
+              fontFamily: "'JetBrains Mono', monospace",
+              fontSize: '13px', color: data.color,
+              letterSpacing: '0.08em', marginBottom: '32px',
+            }}>
+              {data.subtitle}
+            </p>
+
+            {/* Body text */}
+            <p style={{
+              fontFamily: "'Syne', sans-serif",
+              fontSize: '15px', lineHeight: '1.7',
+              color: 'rgba(255,255,255,0.45)',
+              marginBottom: '48px',
+              maxWidth: '520px',
+            }}>
               {data.text}
             </p>
-            
-            <div className="intro-btn pt-8 opacity-0">
-              <button 
+
+            {/* CTA */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+              <button
                 onClick={() => setSeenIntro(true)}
-                className="group relative px-12 py-5 font-bold text-white bg-blue-600 rounded-full hover:bg-blue-700 transition-all duration-300 shadow-2xl shadow-blue-600/20 uppercase tracking-[0.2em] active:scale-95"
+                style={{
+                  padding: '13px 32px',
+                  background: '#ffffff',
+                  color: '#0c0c0e',
+                  border: 'none',
+                  borderRadius: '40px',
+                  fontFamily: "'Syne', sans-serif",
+                  fontSize: '12px',
+                  fontWeight: 800,
+                  letterSpacing: '0.15em',
+                  textTransform: 'uppercase',
+                  cursor: 'pointer',
+                  transition: 'transform 0.15s, opacity 0.15s',
+                }}
+                onMouseEnter={e => e.currentTarget.style.opacity = '0.9'}
+                onMouseLeave={e => e.currentTarget.style.opacity = '1'}
+                onMouseDown={e => e.currentTarget.style.transform = 'scale(0.97)'}
+                onMouseUp={e => e.currentTarget.style.transform = 'scale(1)'}
               >
                 Start Exploring
               </button>
+              <span style={{
+                fontFamily: 'monospace', fontSize: '11px',
+                color: 'rgba(255,255,255,0.18)', letterSpacing: '0.1em',
+              }}>
+                press anywhere to skip →
+              </span>
             </div>
-          </div>
+
+          </motion.div>
+
+          {/* Click-anywhere-to-skip */}
+          <div
+            style={{ position: 'absolute', inset: 0, zIndex: -1, cursor: 'pointer' }}
+            onClick={() => setSeenIntro(true)}
+          />
         </motion.div>
       )}
     </AnimatePresence>

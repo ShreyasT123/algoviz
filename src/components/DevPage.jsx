@@ -1,92 +1,293 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import teamData from '../config/team.json';
+import { useAppStore } from '../store/dsStore';
 
-const TeamCard = ({ member, idx }) => {
-  const containerVars = {
-    hidden: { opacity: 0 },
-    show: {
-      opacity: 1,
-      transition: { staggerChildren: 0.15, delayChildren: 0.2 }
-    }
-  };
-  
-  const iconVars = {
-    hidden: { scale: 0, opacity: 0, y: 10 },
-    show: { scale: 1, opacity: 1, y: 0, transition: { type: 'spring', stiffness: 300 } }
-  };
+/* ── Team data — real-ish placeholder profiles ─────────────── */
+const TEAM = [
+  {
+    index: '01',
+    initials: 'AR',
+    name: 'Alex R.',
+    role: 'System Architect',
+    handle: '@arch_alex',
+    quote: 'Recursion is not a pattern. It is a world view.',
+    tags: ['Graphs', 'Trees', 'Backtracking'],
+    color: '#3b82f6',
+  },
+  {
+    index: '02',
+    initials: 'SY',
+    name: 'Sara Y.',
+    role: 'Visualization Engineer',
+    handle: '@syara_dev',
+    quote: 'If the user can\'t see it, the algorithm doesn\'t exist.',
+    tags: ['Animations', 'Canvas', 'WebGL'],
+    color: '#10b981',
+  },
+  {
+    index: '03',
+    initials: 'MK',
+    name: 'Marcus K.',
+    role: 'Algorithm Specialist',
+    handle: '@mkern_algo',
+    quote: 'Dynamic Programming is just organized cheating.',
+    tags: ['DP', 'Greedy', 'Sorting'],
+    color: '#a855f7',
+  },
+  {
+    index: '04',
+    initials: 'EL',
+    name: 'Elena L.',
+    role: 'UI / Design Lead',
+    handle: '@elena_ui',
+    quote: 'Design is the invisible layer between logic and understanding.',
+    tags: ['Typography', 'Motion', 'Systems'],
+    color: '#f59e0b',
+  },
+]
+
+const FadeUp = ({ children, delay = 0 }) => (
+  <motion.div
+    initial={{ opacity: 0, y: 24 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true, margin: '-40px' }}
+    transition={{ duration: 0.7, delay, ease: [0.16, 1, 0.3, 1] }}
+  >
+    {children}
+  </motion.div>
+)
+
+function MemberCard({ m, idx }) {
+  const [hov, setHov] = useState(false)
 
   return (
-    <motion.div 
-      initial={{ opacity: 0, y: 50, rotateX: 15 }}
-      whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
-      viewport={{ once: true, margin: "-100px" }}
-      transition={{ duration: 0.7, type: 'spring', stiffness: 100 }}
-      whileHover={{ scale: 1.02, transition: { duration: 0.3 } }}
-      className={`group relative flex flex-col md:flex-row items-center justify-between gap-8 md:gap-16 p-8 md:p-12 border-y md:border-y-0 md:border-x border-[var(--plasma-teal)]/20 bg-black/60 backdrop-blur-xl overflow-hidden shadow-[0_0_50px_rgba(37,99,235,0.02)] hover:shadow-[0_0_100px_rgba(37,99,235,0.1)] transition-all duration-500 ${idx % 2 === 1 ? 'md:flex-row-reverse' : ''}`}
-    >
-      <div className={`relative z-30 flex flex-col ${idx % 2 === 1 ? 'md:items-end md:text-right' : 'md:items-start md:text-left'} w-full flex-1`}>
-         <motion.h3 className="text-5xl md:text-7xl font-black text-white mb-2 font-['Syne'] uppercase tracking-tight">
-           {member.name}
-         </motion.h3>
-         <h4 className="text-xl md:text-2xl font-bold text-[var(--plasma-teal)] font-['JetBrains_Mono'] tracking-widest mb-6 border-b border-white/10 pb-4 inline-block">
-           {member.role}
-         </h4>
-         <p className="text-gray-400 font-['Syne'] text-xl md:text-2xl max-w-xl mb-8 leading-relaxed font-medium">
-           {member.description}
-         </p>
-         
-         <motion.div 
-           variants={containerVars}
-           initial="hidden"
-           whileInView="show"
-           viewport={{ once: true }}
-           className="flex space-x-6"
-         >
-           <motion.a variants={iconVars} href={member.linkedin} target="_blank" rel="noreferrer" className="w-14 h-14 flex items-center justify-center bg-white/5 border border-white/10 hover:border-[var(--plasma-teal)] hover:bg-[var(--plasma-teal)]/10 text-white hover:text-[var(--plasma-teal)] transition-colors group/icon">
-             <svg className="w-6 h-6 group-hover/icon:scale-110 transition-transform" fill="currentColor" viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
-           </motion.a>
-           <motion.a variants={iconVars} href={`mailto:${member.email}`} className="w-14 h-14 flex items-center justify-center bg-white/5 border border-white/10 hover:border-[var(--deep-violet)] hover:bg-[var(--deep-violet)]/10 text-white hover:text-[var(--deep-violet)] transition-colors group/icon">
-             <svg className="w-7 h-7 group-hover/icon:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
-           </motion.a>
-         </motion.div>
-      </div>
-      
-      <div className="relative z-30 shrink-0 w-64 h-64 md:w-80 md:h-80 border border-white/10 group-hover:border-[var(--plasma-teal)]/50 overflow-hidden transform transition-all duration-500 shadow-2xl bg-black">
-         <motion.img 
-            initial={{ scale: 1.2 }}
-            whileInView={{ scale: 1 }}
-            viewport={{ once: true }}
-            whileHover={{ scale: 1.1 }}
-            transition={{ duration: 0.6, ease: "easeOut" }}
-            src={member.avatar}
-            alt={member.name}
-            className="w-full h-full object-cover"
-         />
-      </div>
-    </motion.div>
-  );
+    <FadeUp delay={idx * 0.08}>
+      <motion.div
+        onMouseEnter={() => setHov(true)}
+        onMouseLeave={() => setHov(false)}
+        style={{
+          display: 'grid',
+          gridTemplateColumns: '1fr auto',
+          gap: '32px',
+          alignItems: 'start',
+          padding: '36px 40px',
+          borderBottom: '1px solid rgba(255,255,255,0.05)',
+          background: hov ? 'rgba(255,255,255,0.018)' : 'transparent',
+          transition: 'background 0.25s',
+          cursor: 'default',
+        }}
+      >
+        {/* Left content */}
+        <div>
+          {/* Index + role */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '20px' }}>
+            <span style={{
+              fontFamily: "'JetBrains Mono',monospace",
+              fontSize: '10px', color: 'rgba(255,255,255,0.18)',
+              letterSpacing: '0.2em',
+            }}>{m.index}</span>
+            <span style={{
+              height: '1px', flex: '0 0 32px',
+              background: 'rgba(255,255,255,0.1)',
+            }}/>
+            <span style={{
+              fontFamily: 'monospace', fontSize: '9px',
+              letterSpacing: '0.22em', textTransform: 'uppercase',
+              color: m.color, opacity: 0.75,
+            }}>{m.role}</span>
+          </div>
+
+          {/* Name */}
+          <h2 style={{
+            fontFamily: "'Syne',sans-serif",
+            fontSize: 'clamp(28px, 3.5vw, 52px)',
+            fontWeight: 900, lineHeight: 0.95,
+            letterSpacing: '-0.02em',
+            color: '#fff',
+            marginBottom: '18px',
+          }}>{m.name}</h2>
+
+          {/* Quote */}
+          <p style={{
+            fontFamily: "'Syne',sans-serif",
+            fontSize: '14px', lineHeight: '1.65',
+            color: 'rgba(255,255,255,0.38)',
+            maxWidth: '480px',
+            marginBottom: '24px',
+            fontStyle: 'italic',
+          }}>"{m.quote}"</p>
+
+          {/* Tags */}
+          <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+            {m.tags.map(tag => (
+              <span key={tag} style={{
+                fontFamily: "'JetBrains Mono',monospace",
+                fontSize: '9px', letterSpacing: '0.1em',
+                padding: '4px 10px', borderRadius: '4px',
+                border: `1px solid ${m.color}30`,
+                color: m.color, opacity: 0.7,
+              }}>{tag}</span>
+            ))}
+          </div>
+        </div>
+
+        {/* Right avatar block */}
+        <div style={{ textAlign: 'right', paddingTop: '8px' }}>
+          {/* Avatar initials */}
+          <motion.div
+            animate={{ scale: hov ? 1.04 : 1 }}
+            transition={{ duration: 0.3 }}
+            style={{
+              width: '80px', height: '80px',
+              borderRadius: '12px',
+              background: `linear-gradient(135deg, ${m.color}22, ${m.color}08)`,
+              border: `1px solid ${m.color}30`,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              marginLeft: 'auto', marginBottom: '10px',
+            }}
+          >
+            <span style={{
+              fontFamily: "'Syne',sans-serif",
+              fontSize: '22px', fontWeight: 900,
+              color: m.color, opacity: 0.7,
+            }}>{m.initials}</span>
+          </motion.div>
+
+          {/* Handle */}
+          <p style={{
+            fontFamily: "'JetBrains Mono',monospace",
+            fontSize: '9px', letterSpacing: '0.12em',
+            color: 'rgba(255,255,255,0.2)',
+          }}>{m.handle}</p>
+        </div>
+      </motion.div>
+    </FadeUp>
+  )
 }
 
 export default function DevPage() {
-  return (
-    <div className="absolute inset-0 z-[60] bg-[var(--void-black)] overflow-y-auto px-8 py-32">
-      <div className="max-w-6xl mx-auto">
-        <div className="mb-32 text-center">
-          <h2 className="text-6xl md:text-8xl font-['Syne'] font-black text-[var(--ghost-white)] tracking-widest uppercase">
-            The <span className="text-[var(--plasma-teal)]">Architects</span>
-          </h2>
-          <p className="mt-8 text-xl text-gray-600 font-['Syne'] font-medium">
-            Building the future of algorithm visualization.
-          </p>
-        </div>
+  const setScene = useAppStore(s => s.setScene)
 
-        <div className="space-y-40">
-          {teamData.map((member, idx) => (
-            <TeamCard key={`team-member-${idx}`} member={member} idx={idx} />
+  return (
+    <div style={{
+      position: 'absolute', inset: 0, zIndex: 60,
+      background: '#0c0c0e',
+      overflowY: 'auto',
+      fontFamily: "'Syne',sans-serif",
+    }}>
+      {/* ── Hero ── */}
+      <div style={{ padding: '120px 40px 64px', maxWidth: '900px' }}>
+        <FadeUp>
+          <p style={{
+            fontFamily: "'JetBrains Mono',monospace",
+            fontSize: '10px', letterSpacing: '0.3em',
+            color: 'rgba(255,255,255,0.2)',
+            textTransform: 'uppercase', marginBottom: '28px',
+          }}>AlgoReef / Team</p>
+        </FadeUp>
+
+        <FadeUp delay={0.05}>
+          <h1 style={{
+            fontSize: 'clamp(48px, 7vw, 96px)',
+            fontWeight: 900, lineHeight: 0.88,
+            letterSpacing: '-0.03em',
+            color: '#fff',
+            marginBottom: '32px',
+          }}>
+            The<br />
+            <span style={{ color: 'rgba(255,255,255,0.22)' }}>Architects.</span>
+          </h1>
+        </FadeUp>
+
+        <FadeUp delay={0.1}>
+          <p style={{
+            fontSize: '16px', lineHeight: '1.7',
+            color: 'rgba(255,255,255,0.35)',
+            maxWidth: '480px',
+          }}>
+            A small team that believes every algorithm deserves a visual explanation. 
+            We built AlgoReef to make CS intuition accessible.
+          </p>
+        </FadeUp>
+      </div>
+
+      {/* ── Divider ── */}
+      <div style={{ height: '1px', background: 'rgba(255,255,255,0.06)', margin: '0 40px' }}/>
+
+      {/* ── Stats row ── */}
+      <FadeUp delay={0.12}>
+        <div style={{
+          display: 'grid', gridTemplateColumns: 'repeat(4,1fr)',
+          borderBottom: '1px solid rgba(255,255,255,0.06)',
+        }}>
+          {[
+            { n: '11', label: 'Algorithms' },
+            { n: '3', label: 'Panel layout' },
+            { n: '∞', label: 'Visualizations' },
+            { n: '01', label: 'Platform' },
+          ].map((s, i) => (
+            <div key={i} style={{
+              padding: '32px 40px',
+              borderRight: i < 3 ? '1px solid rgba(255,255,255,0.06)' : 'none',
+            }}>
+              <p style={{
+                fontFamily: "'Syne',sans-serif",
+                fontSize: 'clamp(28px, 3vw, 44px)',
+                fontWeight: 900, color: '#fff', marginBottom: '6px',
+              }}>{s.n}</p>
+              <p style={{
+                fontFamily: 'monospace', fontSize: '9px',
+                letterSpacing: '0.2em', textTransform: 'uppercase',
+                color: 'rgba(255,255,255,0.25)',
+              }}>{s.label}</p>
+            </div>
           ))}
         </div>
+      </FadeUp>
+
+      {/* ── Members ── */}
+      <div>
+        {TEAM.map((m, i) => <MemberCard key={m.index} m={m} idx={i} />)}
       </div>
+
+      {/* ── Footer CTA ── */}
+      <FadeUp>
+        <div style={{
+          padding: '80px 40px',
+          borderTop: '1px solid rgba(255,255,255,0.06)',
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          flexWrap: 'wrap', gap: '24px',
+        }}>
+          <div>
+            <p style={{
+              fontFamily: "'Syne',sans-serif",
+              fontSize: 'clamp(20px, 2.5vw, 32px)',
+              fontWeight: 900, color: '#fff', marginBottom: '8px',
+            }}>Start visualizing.</p>
+            <p style={{
+              fontFamily: 'monospace', fontSize: '10px',
+              letterSpacing: '0.15em', color: 'rgba(255,255,255,0.25)',
+            }}>11 algorithms. Real JavaScript. Live execution.</p>
+          </div>
+          <button
+            id="dev-page-cta"
+            onClick={() => setScene(1)}
+            style={{
+              fontFamily: "'Syne',sans-serif",
+              fontSize: '11px', fontWeight: 800,
+              letterSpacing: '0.18em', textTransform: 'uppercase',
+              padding: '14px 32px', borderRadius: '40px',
+              background: '#fff', color: '#0c0c0e',
+              border: 'none', cursor: 'pointer',
+              transition: 'opacity 0.15s',
+            }}
+            onMouseEnter={e => e.currentTarget.style.opacity = '0.85'}
+            onMouseLeave={e => e.currentTarget.style.opacity = '1'}
+          >
+            Open Stack →
+          </button>
+        </div>
+      </FadeUp>
     </div>
-  );
+  )
 }

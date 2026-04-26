@@ -4,8 +4,14 @@ export const useAppStore = create((set, get) => ({
   // ── Scene Management ──────────────────────────────────────────────────────
   currentScene: 0,   // 0=Landing, 1=Stack, 2=Queue, 3=LinkedList, 4=Tree, 5=Graph
   hasSeenIntro: false,
-  setScene: (idx) => set({ currentScene: idx, hasSeenIntro: false }),
+  playgroundExpanded: false,
+  leftSidebarCollapsed: false,
+  rightSidebarCollapsed: false,
+  setScene: (idx) => set({ currentScene: idx, hasSeenIntro: false, playgroundExpanded: false }),
   setSeenIntro: (val) => set({ hasSeenIntro: val }),
+  setPlaygroundExpanded: (val) => set({ playgroundExpanded: val }),
+  toggleLeftSidebar: () => set(s => ({ leftSidebarCollapsed: !s.leftSidebarCollapsed })),
+  toggleRightSidebar: () => set(s => ({ rightSidebarCollapsed: !s.rightSidebarCollapsed })),
 
   // ── Audio ──────────────────────────────────────────────────────────────────
   audioEnabled: false,

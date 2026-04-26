@@ -3,6 +3,7 @@ import ControlPanel from './components/ControlPanel/ControlPanel'
 import CodePanel from './components/CodePanel/CodePanel'
 import TabNavigation from './components/TabNavigation/TabNavigation'
 import SceneManager from './components/SceneManager'
+import ZoomControls from './components/ZoomControls/ZoomControls'
 import LandingOverlay from './components/LandingOverlay'
 import IntroOverlay from './components/IntroOverlay'
 import DevPage from './components/DevPage'
@@ -17,6 +18,11 @@ export default function App() {
   // Zustand State
   const currentScene = useAppStore(s => s.currentScene)
   const hasSeenIntro = useAppStore(s => s.hasSeenIntro)
+  const playgroundExpanded = useAppStore(s => s.playgroundExpanded)
+  const leftSidebarCollapsed = useAppStore(s => s.leftSidebarCollapsed)
+  const rightSidebarCollapsed = useAppStore(s => s.rightSidebarCollapsed)
+  const toggleLeftSidebar = useAppStore(s => s.toggleLeftSidebar)
+  const toggleRightSidebar = useAppStore(s => s.toggleRightSidebar)
   const lastOp = useAppStore(s => s.lastOp)
   const logOp = useAppStore(s => s.logOp)
 
@@ -464,9 +470,20 @@ export default function App() {
         <div className="app-layout">
           {/* Code Panel - Left Sidebar */}
           {hasSeenIntro && (
-            <aside className="code-panel-sidebar">
+            <aside className={`code-panel-sidebar ${leftSidebarCollapsed ? 'collapsed' : ''}`}>
               <CodePanel activeOp={lastOp?.type} activeLine={activeLine} />
             </aside>
+          )}
+
+          {/* Toggle Handle Left */}
+          {hasSeenIntro && (
+            <div 
+              className="sidebar-toggle-handle left-toggle"
+              style={{ left: leftSidebarCollapsed ? '12px' : '316px', transition: 'left 0.3s' }}
+              onClick={toggleLeftSidebar}
+            >
+              {leftSidebarCollapsed ? '▶' : '◀'}
+            </div>
           )}
 
           {/* Main Scene - Center */}
@@ -474,13 +491,28 @@ export default function App() {
             <SceneManager sceneIndex={currentScene} />
           </main>
 
+          {/* Fixed Zoom Controls */}
+          {hasSeenIntro && !playgroundExpanded && <ZoomControls />}
+
           <IntroOverlay />
+
 
           {/* Control Panel - Right Sidebar */}
           {hasSeenIntro && (
-            <aside className="control-panel-sidebar">
+            <aside className={`control-panel-sidebar ${rightSidebarCollapsed ? 'collapsed' : ''}`}>
               <ControlPanel onOperation={handleOperation} />
             </aside>
+          )}
+
+          {/* Toggle Handle Right */}
+          {hasSeenIntro && (
+            <div 
+              className="sidebar-toggle-handle right-toggle"
+              style={{ right: rightSidebarCollapsed ? '12px' : '316px', transition: 'right 0.3s' }}
+              onClick={toggleRightSidebar}
+            >
+              {rightSidebarCollapsed ? '◀' : '▶'}
+            </div>
           )}
         </div>
       )}

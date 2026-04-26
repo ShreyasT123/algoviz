@@ -1,25 +1,32 @@
 import { motion, AnimatePresence } from 'framer-motion'
 import { useAppStore } from '../../store/dsStore'
 import InfoPanel from '../InfoPanel/InfoPanel'
-import './CodePanel.css'
+import JSPlayground from '../JSPlayground/JSPlayground'
 
+/* ─── Pseudocode data ─────────────────────────────────────────── */
 const PSEUDOCODE = {
   push: [
     'function push(value):',
-    '  stack.append(value)',
+    '  if stack is full:',
+    '    raise OverflowError',
+    '  stack[top] ← value',
     '  top ← top + 1',
-    '  return top',
   ],
   pop: [
     'function pop():',
-    '  if stack.isEmpty() → error',
+    '  if stack is empty:',
+    '    raise UnderflowError',
     '  val ← stack[top]',
     '  top ← top - 1',
     '  return val',
   ],
+  peek: [
+    'function peek():',
+    '  return stack[top]',
+  ],
   enqueue: [
     'function enqueue(value):',
-    '  queue.append(value)',
+    '  queue[tail] ← value',
     '  tail ← tail + 1',
   ],
   dequeue: [
@@ -46,12 +53,12 @@ const PSEUDOCODE = {
     '  while queue not empty:',
     '    node ← queue.dequeue()',
     '    visit(node)',
-    '    queue.enqueue(node.children)',
+    '    enqueue(node.children)',
   ],
   dfs: [
     'function DFS(node):',
     '  visit(node)',
-    '  for child in node.children:',
+    '  for child in children:',
     '    DFS(child)',
   ],
   addNode: [
@@ -62,143 +69,241 @@ const PSEUDOCODE = {
   addEdge: [
     'function addEdge(u, v):',
     '  u.edges.append(v)',
-    '  v.edges.append(u) // if undirected',
-  ],
-  greedyRun: [
-     'function coin_change(target):',
-     '  for coin in [25, 10, 5, 1]:',
-     '    while target >= coin:',
-     '      target -= coin',
-     '      coins.push(coin)',
-     '  return coins'
-  ],
-  recRun: [
-     'function factorial(n):',
-     '  if n <= 1: return 1',
-     '  return n * factorial(n - 1)'
-  ],
-  btRun: [
-     'function NQueens(row):',
-     '  if row == N: return True',
-     '  for col in 0 to N-1:',
-     '    if isSafe(row, col):',
-     '      place_queen()',
-     '      if NQueens(row + 1): return True',
-     '      remove_queen()',
-     '  return False'
+    '  v.edges.append(u)',
   ],
   dpRun: [
-     'function GridTraveler(grid):',
-     '  dp[0][0] = 1',
-     '  for r in rows:',
-     '    for c in cols:',
-     '      if r > 0 or c > 0:',
-     '         dp[r][c] = dp[r-1][c] + dp[r][c-1]',
+    'function gridTraveler(r, c):',
+    '  dp[0][0] = 1',
+    '  for r in rows:',
+    '    for c in cols:',
+    '      dp[r][c] = dp[r-1][c]',
+    '               + dp[r][c-1]',
   ],
   dcRun: [
     'function split(Array):',
     '  mid ← len(Array) / 2',
-    '  left ← Array[0...mid]',
-    '  right ← Array[mid...end]',
+    '  left ← Array[0 … mid]',
+    '  right ← Array[mid … end]',
     '  return left, right',
   ],
   greedyRun: [
-    'function climb(pos):',
-    '  loop 15 times:',
-    '    next ← argmax(height(neighbor))',
-    '    if height(next) > height(pos):',
-    '      pos ← next',
-    '    else break',
+    'function coinChange(target):',
+    '  for coin in [25,10,5,1]:',
+    '    while target >= coin:',
+    '      target -= coin',
+    '      coins.push(coin)',
+    '  return coins',
   ],
   sortBubble: [
     'function bubbleSort(A):',
-    '  for i from 1 to len(A):',
-    '    for j from 0 to len(A)-i-1:',
+    '  for i from 0 to n:',
+    '    for j from 0 to n-i-1:',
     '      if A[j] > A[j+1]:',
     '        swap(A[j], A[j+1])',
   ],
   sortQuick: [
-    'function quickSort(A, low, high):',
-    '  if low < high:',
-    '    p ← partition(A, low, high)',
-    '    quickSort(A, low, p-1)',
-    '    quickSort(A, p+1, high)',
+    'function quickSort(A, lo, hi):',
+    '  if lo < hi:',
+    '    p ← partition(A, lo, hi)',
+    '    quickSort(A, lo, p-1)',
+    '    quickSort(A, p+1, hi)',
   ],
   recRun: [
-    'function recurse(depth):',
-    '  if depth == MAX:',
-    '    return BASE_CASE',
-    '  return recurse(depth+1)',
+    'function factorial(n):',
+    '  if n <= 1:',
+    '    return 1          // base',
+    '  return n * fact(n-1)',
+  ],
+  btRun: [
+    'function nQueens(row):',
+    '  if row == N: return True',
+    '  for col in 0..N-1:',
+    '    if isSafe(row, col):',
+    '      placeQueen(row, col)',
+    '      if nQueens(row+1): True',
+    '      removeQueen(row, col)',
+    '  return False',
   ],
 }
 
 const BIG_O = {
-  push:    { time: 'O(1)', space: 'O(1)' },
-  pop:     { time: 'O(1)', space: 'O(1)' },
-  enqueue: { time: 'O(1)', space: 'O(1)' },
-  dequeue: { time: 'O(1)', space: 'O(1)' },
-  insert:  { time: 'O(n)', space: 'O(1)' },
-  delete:  { time: 'O(n)', space: 'O(1)' },
-  bfs:     { time: 'O(V+E)', space: 'O(V)' },
-  dfs:     { time: 'O(V+E)', space: 'O(V)' },
-  addNode:   { time: 'O(1)', space: 'O(1)' },
-  addEdge:   { time: 'O(1)', space: 'O(1)' },
-  dpRun:     { time: 'O(n)', space: 'O(n)' },
-  dcRun:     { time: 'O(1)', space: 'O(n)' },
-  greedyRun: { time: 'O(k)', space: 'O(1)' },
-  sortBubble:{ time: 'O(n²)', space: 'O(1)' },
-  sortQuick: { time: 'O(n log n)', space: 'O(log n)' },
-  recRun:    { time: 'O(n)', space: 'O(n)' },
+  push:       { time: 'O(1)',      space: 'O(1)'    },
+  pop:        { time: 'O(1)',      space: 'O(1)'    },
+  peek:       { time: 'O(1)',      space: 'O(1)'    },
+  enqueue:    { time: 'O(1)',      space: 'O(1)'    },
+  dequeue:    { time: 'O(1)',      space: 'O(1)'    },
+  insert:     { time: 'O(n)',      space: 'O(1)'    },
+  delete:     { time: 'O(n)',      space: 'O(1)'    },
+  bfs:        { time: 'O(V+E)',    space: 'O(V)'    },
+  dfs:        { time: 'O(V+E)',    space: 'O(V)'    },
+  addNode:    { time: 'O(1)',      space: 'O(1)'    },
+  addEdge:    { time: 'O(1)',      space: 'O(1)'    },
+  dpRun:      { time: 'O(n²)',     space: 'O(n²)'   },
+  dcRun:      { time: 'O(n log n)',space: 'O(n)'    },
+  greedyRun:  { time: 'O(n/k)',    space: 'O(1)'    },
+  sortBubble: { time: 'O(n²)',     space: 'O(1)'    },
+  sortQuick:  { time: 'O(n log n)',space: 'O(log n)'},
+  recRun:     { time: 'O(n)',      space: 'O(n)'    },
+  btRun:      { time: 'O(n!)',     space: 'O(n)'    },
 }
 
+/* ─── Token colouring (minimal) ─────────────────────────────── */
+function colorToken(word) {
+  if (/^(function|return|if|for|while|raise|in)$/.test(word)) return 'rgba(147,197,253,0.8)'
+  if (/^(True|False|None|null|error)$/.test(word)) return 'rgba(252,165,165,0.8)'
+  if (/^\d+$/.test(word)) return 'rgba(216,180,254,0.8)'
+  if (word.startsWith('//')) return 'rgba(255,255,255,0.2)'
+  return null
+}
+
+function CodeLine({ line, isActive, lineNum }) {
+  return (
+    <motion.div
+      animate={{ opacity: isActive ? 1 : 0.42 }}
+      transition={{ duration: 0.2 }}
+      style={{
+        position: 'relative',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '10px',
+        fontFamily: "'JetBrains Mono', monospace",
+        fontSize: '10.5px',
+        padding: '4px 10px',
+        borderRadius: '4px',
+        background: isActive ? 'rgba(37,99,235,0.1)' : 'transparent',
+        borderLeft: isActive ? '2px solid rgba(37,99,235,0.7)' : '2px solid transparent',
+        transition: 'background 0.2s',
+      }}
+    >
+      <span style={{ color: 'rgba(255,255,255,0.18)', minWidth: '16px', textAlign: 'right', fontSize: '9px' }}>
+        {lineNum}
+      </span>
+      <span style={{ color: isActive ? 'rgba(147,197,253,0.9)' : 'rgba(255,255,255,0.6)', letterSpacing: '-0.01em' }}>
+        {line}
+      </span>
+      {isActive && (
+        <motion.span
+          layoutId="beam"
+          style={{
+            position: 'absolute', right: '10px',
+            width: '6px', height: '6px', borderRadius: '50%',
+            background: 'rgba(37,99,235,0.9)',
+            boxShadow: '0 0 8px rgba(37,99,235,0.6)',
+          }}
+          transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+        />
+      )}
+    </motion.div>
+  )
+}
+
+/* ─── Main component ─────────────────────────────────────────── */
 export default function CodePanel({ activeOp, activeLine }) {
-  const lines  = PSEUDOCODE[activeOp] || []
-  const bigo   = BIG_O[activeOp]
+  const lines = PSEUDOCODE[activeOp] || []
+  const bigo  = BIG_O[activeOp]
 
   return (
-    <>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', width: '100%' }}>
+
+      {/* Info panel (structure description) */}
       <InfoPanel />
+
+
+      {/* Pseudocode panel */}
       <AnimatePresence>
         {activeOp && (
-        <motion.div
-          className="code-panel"
-          initial={{ x: 120, opacity: 0 }}
-          animate={{ x: 0, opacity: 1 }}
-          exit={{ x: 120, opacity: 0 }}
-          transition={{ type: 'spring', stiffness: 280, damping: 28 }}
-          drag dragMomentum={false}
-        >
-          <div className="code-header">
-            <span className="code-op-name">{activeOp?.toUpperCase()}</span>
-            {bigo && (
-              <span className="code-bigo">
-                <span className="bigo-time">T: {bigo.time}</span>
-                <span className="bigo-space">S: {bigo.space}</span>
+          <motion.div
+            key={activeOp}
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.3 }}
+            style={{
+              background: 'rgba(255,255,255,0.02)',
+              border: '1px solid rgba(255,255,255,0.06)',
+              borderRadius: '10px',
+              overflow: 'hidden',
+            }}
+          >
+            {/* Header */}
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              padding: '10px 12px',
+              borderBottom: '1px solid rgba(255,255,255,0.05)',
+              background: 'rgba(255,255,255,0.02)',
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                {/* Traffic light dots */}
+                {['rgba(255,95,87,0.5)','rgba(255,189,46,0.5)','rgba(40,200,64,0.5)'].map((c,i) => (
+                  <span key={i} style={{ width: '7px', height: '7px', borderRadius: '50%', background: c, display: 'inline-block' }}/>
+                ))}
+              </div>
+              <span style={{
+                fontFamily: "'JetBrains Mono', monospace", fontSize: '9px',
+                color: 'rgba(255,255,255,0.2)', letterSpacing: '0.1em',
+              }}>
+                {activeOp.toUpperCase()} · pseudocode
               </span>
-            )}
-          </div>
-          <div className="code-body">
-            {lines.map((line, i) => (
-              <motion.div
-                key={i}
-                className={`code-line ${i === activeLine ? 'active' : ''}`}
-                animate={{ opacity: i === activeLine ? 1 : 0.45 }}
-              >
-                <span className="line-num">{i + 1}</span>
-                <span className="line-text">{line}</span>
-                {i === activeLine && (
-                  <motion.span
-                    className="line-beam"
-                    layoutId="beam"
-                    transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+              {bigo && (
+                <div style={{ display: 'flex', gap: '5px' }}>
+                  <span style={{
+                    fontFamily: "'JetBrains Mono', monospace", fontSize: '8px',
+                    padding: '2px 6px', borderRadius: '4px',
+                    background: 'rgba(220,38,38,0.1)', color: 'rgba(252,165,165,0.7)',
+                    border: '1px solid rgba(220,38,38,0.18)',
+                  }}>T: {bigo.time}</span>
+                  <span style={{
+                    fontFamily: "'JetBrains Mono', monospace", fontSize: '8px',
+                    padding: '2px 6px', borderRadius: '4px',
+                    background: 'rgba(168,85,247,0.1)', color: 'rgba(216,180,254,0.7)',
+                    border: '1px solid rgba(168,85,247,0.18)',
+                  }}>S: {bigo.space}</span>
+                </div>
+              )}
+            </div>
+
+            {/* Code body */}
+            <div style={{ padding: '8px 4px' }}>
+              {lines.map((line, i) => (
+                <CodeLine
+                  key={i}
+                  line={line}
+                  lineNum={i + 1}
+                  isActive={i === activeLine}
+                />
+              ))}
+            </div>
+
+            {/* Progress bar */}
+            {activeLine >= 0 && activeLine < lines.length && (
+              <div style={{ padding: '0 12px 10px' }}>
+                <div style={{ height: '2px', background: 'rgba(255,255,255,0.05)', borderRadius: '2px' }}>
+                  <motion.div
+                    style={{
+                      height: '100%', borderRadius: '2px',
+                      background: 'rgba(37,99,235,0.6)',
+                    }}
+                    animate={{ width: `${((activeLine + 1) / lines.length) * 100}%` }}
+                    transition={{ duration: 0.3 }}
                   />
-                )}
-              </motion.div>
-            ))}
-          </div>
-        </motion.div>
-      )}
-    </AnimatePresence>
-    </>
+                </div>
+                <p style={{
+                  fontFamily: 'monospace', fontSize: '8px',
+                  color: 'rgba(255,255,255,0.15)', marginTop: '5px',
+                  textAlign: 'right',
+                }}>
+                  line {activeLine + 1} / {lines.length}
+                </p>
+              </div>
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* JS Playground */}
+      <JSPlayground />
+    </div>
   )
 }
